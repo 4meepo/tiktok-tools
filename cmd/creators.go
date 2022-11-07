@@ -115,7 +115,7 @@ func crawlCreators() error {
 
 func saveFile(creators []CreatorProfile) {
 	log.Println("保存文件至csv...")
-	f, err := os.Create(fmt.Sprintf("%s.csv", strings.TrimSpace(outputfile)))
+	f, err := os.Create(fmt.Sprintf("%s", strings.TrimSpace(outputfile)))
 	if err != nil {
 		log.Println("创建文件失败: ", err)
 		return
