@@ -7,5 +7,5 @@
    3. 启动程序,通过在 终端中输入以下命令,开始爬取达人信息:
 
         ```bash
-            ./tiktok-tools-darwin-amd64 crawl creators -f curl.txt -o out.csv
+            ./tiktok-tools-darwin-amd64 crawl creators -f curl.txt -o creators.csv
         ```
