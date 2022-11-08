@@ -120,6 +120,7 @@ func crawlCreators() error {
 			}
 			creators = append(creators, response.Data.CreatorProfile...)
 			log.Printf("已爬取%d个达人", len(creators))
+			time.Sleep(time.Second * 1)
 		}
 	}
 }
