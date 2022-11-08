@@ -179,6 +179,7 @@ type CreatorProfile struct {
 	Region            string   `json:"region"`
 	ProductCategories []string `json:"product_categories"`
 	FollowerCount     int      `json:"follower_cnt"`
+	VideoAvgViewCnt   int      `json:"video_avg_view_cnt"`
 	CreatorOecuid     string   `json:"creator_oecuid"`
 }
 
