@@ -44,9 +44,16 @@ func init() {
 func crawlCreators() error {
 	f, err := os.Open(curlFile)
 	if err != nil {
-		return fmt.Errorf("打开文件失败: %w", err)
+		return fmt.Errorf("打开文件%s失败: %w", curlFile, err)
 	}
 	defer f.Close()
+
+	outputF, err := os.Create(fmt.Sprintf("%s", strings.TrimSpace(outputfile)))
+	if err != nil {
+		return fmt.Errorf("创建文件 %s 失败: [%w] ", outputfile, err)
+
+	}
+	defer outputF.Close()
 
 	bytes, err := io.ReadAll(f)
 	if err != nil {
@@ -77,7 +84,7 @@ func crawlCreators() error {
 	for i := 1; ; i++ {
 		select {
 		case <-ctx.Done():
-			saveFile(creators)
+			saveFile(outputF, creators)
 			log.Println("程序退出...")
 			return nil
 		default:
@@ -94,17 +101,21 @@ func crawlCreators() error {
 			// 2. 发送请求
 			httpResponse, err := httpClient.Do(httpRequest)
 			if err != nil {
+				saveFile(outputF, creators)
 				return fmt.Errorf("发送http请求失败: %w", err)
 			}
 			httpResponseBytes, err := io.ReadAll(httpResponse.Body)
 			if err != nil {
+				saveFile(outputF, creators)
 				return fmt.Errorf("读取http响应失败: %w", err)
 			}
 			var response CreatorResponse
 			if err := json.Unmarshal(httpResponseBytes, &response); err != nil {
+				saveFile(outputF, creators)
 				return fmt.Errorf("解析http响应失败: %w", err)
 			}
 			if response.Code != 0 {
+				saveFile(outputF, creators)
 				return fmt.Errorf("http响应异常: %d %s", response.Code, response.Message)
 			}
 			creators = append(creators, response.Data.CreatorProfile...)
@@ -113,14 +124,8 @@ func crawlCreators() error {
 	}
 }
 
-func saveFile(creators []CreatorProfile) {
+func saveFile(f *os.File, creators []CreatorProfile) {
 	log.Println("保存文件至csv...")
-	f, err := os.Create(fmt.Sprintf("%s", strings.TrimSpace(outputfile)))
-	if err != nil {
-		log.Println("创建文件失败: ", err)
-		return
-	}
-	defer f.Close()
 
 	// 写入csv
 	w := csv.NewWriter(f)
