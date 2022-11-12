@@ -35,6 +35,6 @@ func init() {
 	crawlCmd.AddCommand(xianzhiCmd)
 
 	xianzhiCmd.Flags().StringVarP(&authorization, "authorization", "a", "", "先知网的 authorization")
-	xianzhiCmd.Flags().StringVarP(&xianzhiRegion, "region", "r", "", "地区 ID--印尼 MY--马来西亚 TH--泰国  GB--英国")
+	xianzhiCmd.Flags().StringVarP(&xianzhiRegion, "region", "r", "", "地区 VN--越南 MY--马来西亚 TH--泰国  PH--菲律宾")
 	xianzhiCmd.Flags().IntVarP(&xianzhiFromPage, "fromPage", "p", 0, "从第几页开始爬取")
 }
