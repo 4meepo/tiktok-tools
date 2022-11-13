@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
@@ -13,9 +14,12 @@ import (
 
 	"github.com/4meepo/tiktok-tools/elegant"
 	"github.com/4meepo/tiktok-tools/ent"
+	"github.com/4meepo/tiktok-tools/ent/creator"
 )
 
-func CrawlCreators(xianzhiRegion, authorization string, fromPage int) error {
+func CrawlCreators(xianzhiRegion, authorization, userId string, fromPage, batchSize int, duration time.Duration) error {
+	rand.Seed(time.Now().Unix())
+
 	ctx, cancelFn := context.WithCancel(context.Background())
 	go elegant.Shutdown(cancelFn)
 
@@ -30,7 +34,7 @@ func CrawlCreators(xianzhiRegion, authorization string, fromPage int) error {
 			return nil
 		default:
 			log.Printf("已爬取 %d 条数据,正在爬取第 %d 页数据...", _count, i)
-			rsp, err := queryByRegion(xianzhiRegion, authorization, i, size)
+			rsp, err := queryByRegion(xianzhiRegion, userId, authorization, i, size)
 			if err != nil {
 				log.Printf("获取第 %d 页数据失败: [%v]\n", i, err)
 				i--
@@ -42,9 +46,30 @@ func CrawlCreators(xianzhiRegion, authorization string, fromPage int) error {
 				os.Exit(0)
 			}
 
+			// 剔除重复数据
+			xzids := make([]string, 0, batchSize)
+			for _, v := range rsp.Data.List {
+				xzids = append(xzids, v.Xzid)
+			}
+			creators, err := entClient.Creator.Query().Where(creator.XzidIn(xzids...)).All(ctx)
+			if err != nil {
+				log.Printf("查询重复数据失败: [%v]\n", err)
+				i--
+				continue
+			}
+			// to map
+			creatorMap := make(map[string]struct{}, len(creators))
+			for _, v := range creators {
+				creatorMap[v.Xzid] = struct{}{}
+			}
+
 			// batch insert to db
 			bulk := make([]*ent.CreatorCreate, 0, len(rsp.Data.List))
 			for _, item := range rsp.Data.List {
+				if _, ok := creatorMap[item.Xzid]; ok {
+					log.Printf("数据重复,跳过: %s\n", item.Xzid)
+					continue
+				}
 				c := entClient.Creator.Create().
 					SetXzid(item.Xzid).
 					SetUniqueID(item.UniqueID).
@@ -64,18 +89,25 @@ func CrawlCreators(xianzhiRegion, authorization string, fromPage int) error {
 			}
 
 		}
-		time.Sleep(time.Second * 10)
+		// sleep
+		time.Sleep(randomDuration())
+
+		// 休息
+		if i%batchSize == 0 {
+			log.Printf("防止封号 休息 %s \n", duration.String())
+			time.Sleep(duration)
+		}
 	}
 }
 
-func queryByRegion(region, authorization string, page, pageSize int) (*XianzhiBatchResponse, error) {
+func queryByRegion(region, userId, authorization string, page, pageSize int) (*XianzhiBatchResponse, error) {
 	host := "https://usermgr.xianzhiai.com/search/kol/categorySearch"
 
 	httpRequest, err := http.NewRequest("POST", host, strings.NewReader(fmt.Sprintf(`
 {
     "page": %d,
     "pageSize": %d,
-    "userId": "8a669a2284664bab01846b1217fe000d",
+    "userId": "%s",
     "canContact": null,
     "categoryId": null,
     "followerCountEnd": null,
@@ -85,7 +117,7 @@ func queryByRegion(region, authorization string, page, pageSize int) (*XianzhiBa
 	"sortWay": "desc",
     "keyWord": ""
 }
-`, page, pageSize, region)))
+`, page, pageSize, userId, region)))
 
 	httpRequest.Header.Add("Authorization", fmt.Sprintf("Bearer %s", authorization))
 	if err != nil {
@@ -127,4 +159,10 @@ type Item struct {
 type Data struct {
 	Count int    `json:"count"`
 	List  []Item `json:"dataList"`
+}
+
+func randomDuration() time.Duration {
+	min, max := 30, 60
+	s := min + rand.Intn(max-min)
+	return time.Duration(s) * time.Second
 }

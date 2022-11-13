@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"errors"
+	"time"
 
 	"github.com/4meepo/tiktok-tools/xianzhi"
 	"github.com/spf13/cobra"
@@ -24,17 +25,27 @@ var xianzhiCmd = &cobra.Command{
 		if xianzhiFromPage < 1 {
 			return errors.New("fromPage 不能小于 1")
 		}
-		return xianzhi.CrawlCreators(xianzhiRegion, authorization, xianzhiFromPage)
+		var d time.Duration
+		var err error
+		if d, err = time.ParseDuration(xianzhiDuration); err != nil {
+			return errors.New("duration 格式错误")
+		}
+		return xianzhi.CrawlCreators(xianzhiRegion, authorization, xianzhiUserId, xianzhiFromPage, batchSize, d)
 	},
 }
 
-var authorization, xianzhiRegion string
-var xianzhiFromPage int
+var authorization, xianzhiUserId, xianzhiRegion string
+var xianzhiFromPage, batchSize int
+var xianzhiDuration string
 
 func init() {
 	crawlCmd.AddCommand(xianzhiCmd)
 
 	xianzhiCmd.Flags().StringVarP(&authorization, "authorization", "a", "", "先知网的 authorization")
 	xianzhiCmd.Flags().StringVarP(&xianzhiRegion, "region", "r", "", "地区 VN--越南 MY--马来西亚 TH--泰国  PH--菲律宾")
-	xianzhiCmd.Flags().IntVarP(&xianzhiFromPage, "fromPage", "p", 0, "从第几页开始爬取")
+	xianzhiCmd.Flags().StringVarP(&xianzhiUserId, "userId", "u", "", "userId")
+	xianzhiCmd.Flags().StringVarP(&xianzhiDuration, "duration", "d", "", "休息时间")
+	xianzhiCmd.Flags().IntVarP(&xianzhiFromPage, "fromPage", "f", 0, "从第几页开始爬取")
+	xianzhiCmd.Flags().IntVarP(&batchSize, "batchSize", "b", 0, "爬取批次大小")
+	// todo 粉丝数范围
 }
