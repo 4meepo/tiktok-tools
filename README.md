@@ -12,4 +12,4 @@
            ./tiktok-tools-darwin-amd64 crawl affiliate -f  ./curl.txt -r PH -d 30m
         ```
 
-   4. 爬取过程会一直进行, 直到发生任何程序错误; 或者在命令行中按下 `ctrl + c` 停止爬取. 结果会以csv格式保存.
+   4. 爬取过程会一直进行, 直到发生任何程序错误; 或者在命令行中按下 `ctrl + c` 停止爬取. 结果会保存在数据库中.
