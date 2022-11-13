@@ -34,6 +34,8 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration, p
 		select {
 		case <-ctx.Done():
 			os.Exit(1)
+		default:
+			//
 		}
 		// 休息一段时间
 		if page == maxPagePerBatch {
@@ -147,7 +149,7 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration, p
 		retryTimes = 0
 
 		// 输出统计信息
-		log.Printf("第%d页, 更新%d条, 插入%d条\n", page, totalUpdate, totalInsert)
+		log.Printf("第%d页, 更新%d条, 插入%d条, 预计共有 %d \n", page, totalUpdate, totalInsert, rsp.Data.NextPagination.Total)
 		time.Sleep(randomDuration())
 
 	}
