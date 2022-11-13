@@ -22,7 +22,7 @@ func GetInstance() *Client {
 		}
 		// defer client.Close()
 		// Run the auto migration tool.
-		if err := client.Debug().Schema.Create(context.Background(),
+		if err := client.Schema.Create(context.Background(),
 			migrate.WithForeignKeys(false), // 不使用数据库外键
 			migrate.WithDropIndex(true),    // 启用删除索引
 			migrate.WithDropColumn(true),   // 启用删除列

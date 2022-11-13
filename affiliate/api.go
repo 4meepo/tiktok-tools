@@ -23,7 +23,9 @@ func searchCreators(curlSample string, request searchCreatorsRequest) (*searchCr
 	bytes, _ := json.Marshal(request)
 	r.Body = string(bytes)
 
-	rsp, err := http.DefaultClient.Do(r.AsHttpRequest())
+	req := r.AsHttpRequest()
+
+	rsp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("发送searchCreators请求失败: %w", err)
 	}
@@ -54,19 +56,19 @@ type searchCreatorsRequest struct {
 
 type requestPayload struct {
 	Algorithm              uint8         `json:"algorithm"`
-	ContentPreferenceRange []interface{} `json:"content_preference_range"`
-	CreatorScoreRange      []interface{} `json:"creator_score_range"`
-	FollowerAgeGroups      []interface{} `json:"follower_age_groups"`
-	FollowerCntMax         *uint32       `json:"follower_cnt_max"`
-	FollowerCntMin         *uint32       `json:"follower_cnt_min"`
-	FollowerGenders        []interface{} `json:"follower_genders"`
-	Managed_by_agency      []interface{} `json:"managed_by_agency"`
-	Pagination             pagination    `json:"pagination"`
+	ContentPreferenceRange []interface{} `json:"content_preference_range,omitempty"`
+	CreatorScoreRange      []interface{} `json:"creator_score_range,omitempty"`
+	FollowerAgeGroups      []interface{} `json:"follower_age_groups,omitempty"`
+	FollowerCntMax         *uint32       `json:"follower_cnt_max,omitempty"`
+	FollowerCntMin         *uint32       `json:"follower_cnt_min,omitempty"`
+	FollowerGenders        []interface{} `json:"follower_genders,omitempty"`
+	Managed_by_agency      []interface{} `json:"managed_by_agency,omitempty"`
+	Pagination             pagination    `json:"pagination,omitempty"`
 }
 type pagination struct {
 	Size           int  `json:"size"` // from 0
 	Page           int  `json:"page"`
-	NextItemCursor *int `json:"next_item_cursor"` // = size * page + 1, nil if = 0
+	NextItemCursor *int `json:"next_item_cursor,omitempty"` // = size * page + 1, nil if = 0
 }
 
 // rsp

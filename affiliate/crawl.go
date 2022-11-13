@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"time"
 
@@ -13,7 +14,11 @@ import (
 	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
 )
 
-func CrawlAffiliateCreators(curlSample, region string, duration time.Duration) error {
+var httpClient = http.Client{
+	Timeout: time.Second * 8,
+}
+
+func CrawlAffiliateCreators(curlSample, region string, duration time.Duration, pageSize, maxBatch int) error {
 	ctx, cancelFn := context.WithCancel(context.Background())
 	ec := ent.GetInstance()
 
@@ -21,12 +26,15 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration) e
 
 	var followerCntMax = getMinFollowerCount(region)
 
-	// 此api每个请求最多返回2000条数据, 我们每爬1000条就休息一段时间,下次重新开始爬取
-	const size = 100
-	const maxPagePerBatch = 10 // 每次最多爬取10页
+	// 此api每个请求最多返回2000条数据, 我们每爬maxBatch条就休息一段时间,下次重新开始爬取
+	maxPagePerBatch := maxBatch / pageSize // 每次最多爬取10页
 
 	var retryTimes, totalUpdate, totalInsert int
 	for page := 0; ; page++ {
+		select {
+		case <-ctx.Done():
+			os.Exit(1)
+		}
 		// 休息一段时间
 		if page == maxPagePerBatch {
 			log.Printf("防止封号 休息 %s 后继续... \n", duration.String())
@@ -37,7 +45,7 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration) e
 
 		var nextItemCursor *int
 		if page != 0 {
-			nic := (page * size) + 1
+			nic := (page * pageSize) + 1
 			nextItemCursor = &nic
 		}
 		request := searchCreatorsRequest{
@@ -45,7 +53,7 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration) e
 				Algorithm:      3,
 				FollowerCntMax: followerCntMax,
 				Pagination: pagination{
-					Size:           size,
+					Size:           pageSize,
 					Page:           page,
 					NextItemCursor: nextItemCursor,
 				},
@@ -57,7 +65,7 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration) e
 			if errors.Is(err, ErrCurlCmd) {
 				return err
 			}
-			log.Printf("搜索达人失败: %s\n", err.Error())
+			log.Printf("搜索达人失败: %v\n", err)
 			retry(&page, &retryTimes)
 			continue
 		}
