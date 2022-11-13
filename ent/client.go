@@ -11,6 +11,7 @@ import (
 	"github.com/4meepo/tiktok-tools/ent/migrate"
 
 	"github.com/4meepo/tiktok-tools/ent/creator"
+	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -23,6 +24,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Creator is the client for interacting with the Creator builders.
 	Creator *CreatorClient
+	// TiktokCreator is the client for interacting with the TiktokCreator builders.
+	TiktokCreator *TiktokCreatorClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -37,6 +40,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Creator = NewCreatorClient(c.config)
+	c.TiktokCreator = NewTiktokCreatorClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -68,9 +72,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Creator: NewCreatorClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Creator:       NewCreatorClient(cfg),
+		TiktokCreator: NewTiktokCreatorClient(cfg),
 	}, nil
 }
 
@@ -88,9 +93,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Creator: NewCreatorClient(cfg),
+		ctx:           ctx,
+		config:        cfg,
+		Creator:       NewCreatorClient(cfg),
+		TiktokCreator: NewTiktokCreatorClient(cfg),
 	}, nil
 }
 
@@ -121,6 +127,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Creator.Use(hooks...)
+	c.TiktokCreator.Use(hooks...)
 }
 
 // CreatorClient is a client for the Creator schema.
@@ -211,4 +218,94 @@ func (c *CreatorClient) GetX(ctx context.Context, id int) *Creator {
 // Hooks returns the client hooks.
 func (c *CreatorClient) Hooks() []Hook {
 	return c.hooks.Creator
+}
+
+// TiktokCreatorClient is a client for the TiktokCreator schema.
+type TiktokCreatorClient struct {
+	config
+}
+
+// NewTiktokCreatorClient returns a client for the TiktokCreator from the given config.
+func NewTiktokCreatorClient(c config) *TiktokCreatorClient {
+	return &TiktokCreatorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tiktokcreator.Hooks(f(g(h())))`.
+func (c *TiktokCreatorClient) Use(hooks ...Hook) {
+	c.hooks.TiktokCreator = append(c.hooks.TiktokCreator, hooks...)
+}
+
+// Create returns a builder for creating a TiktokCreator entity.
+func (c *TiktokCreatorClient) Create() *TiktokCreatorCreate {
+	mutation := newTiktokCreatorMutation(c.config, OpCreate)
+	return &TiktokCreatorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TiktokCreator entities.
+func (c *TiktokCreatorClient) CreateBulk(builders ...*TiktokCreatorCreate) *TiktokCreatorCreateBulk {
+	return &TiktokCreatorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TiktokCreator.
+func (c *TiktokCreatorClient) Update() *TiktokCreatorUpdate {
+	mutation := newTiktokCreatorMutation(c.config, OpUpdate)
+	return &TiktokCreatorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TiktokCreatorClient) UpdateOne(tc *TiktokCreator) *TiktokCreatorUpdateOne {
+	mutation := newTiktokCreatorMutation(c.config, OpUpdateOne, withTiktokCreator(tc))
+	return &TiktokCreatorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TiktokCreatorClient) UpdateOneID(id int) *TiktokCreatorUpdateOne {
+	mutation := newTiktokCreatorMutation(c.config, OpUpdateOne, withTiktokCreatorID(id))
+	return &TiktokCreatorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TiktokCreator.
+func (c *TiktokCreatorClient) Delete() *TiktokCreatorDelete {
+	mutation := newTiktokCreatorMutation(c.config, OpDelete)
+	return &TiktokCreatorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TiktokCreatorClient) DeleteOne(tc *TiktokCreator) *TiktokCreatorDeleteOne {
+	return c.DeleteOneID(tc.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TiktokCreatorClient) DeleteOneID(id int) *TiktokCreatorDeleteOne {
+	builder := c.Delete().Where(tiktokcreator.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TiktokCreatorDeleteOne{builder}
+}
+
+// Query returns a query builder for TiktokCreator.
+func (c *TiktokCreatorClient) Query() *TiktokCreatorQuery {
+	return &TiktokCreatorQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TiktokCreator entity by its id.
+func (c *TiktokCreatorClient) Get(ctx context.Context, id int) (*TiktokCreator, error) {
+	return c.Query().Where(tiktokcreator.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TiktokCreatorClient) GetX(ctx context.Context, id int) *TiktokCreator {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TiktokCreatorClient) Hooks() []Hook {
+	return c.hooks.TiktokCreator
 }

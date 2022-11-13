@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Creator is the client for interacting with the Creator builders.
 	Creator *CreatorClient
+	// TiktokCreator is the client for interacting with the TiktokCreator builders.
+	TiktokCreator *TiktokCreatorClient
 
 	// lazily loaded.
 	client     *Client
@@ -146,6 +148,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Creator = NewCreatorClient(tx.config)
+	tx.TiktokCreator = NewTiktokCreatorClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

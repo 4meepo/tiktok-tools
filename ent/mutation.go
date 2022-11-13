@@ -11,6 +11,7 @@ import (
 
 	"github.com/4meepo/tiktok-tools/ent/creator"
 	"github.com/4meepo/tiktok-tools/ent/predicate"
+	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
 
 	"entgo.io/ent"
 )
@@ -24,7 +25,8 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCreator = "Creator"
+	TypeCreator       = "Creator"
+	TypeTiktokCreator = "TiktokCreator"
 )
 
 // CreatorMutation represents an operation that mutates the Creator nodes in the graph.
@@ -1052,4 +1054,1114 @@ func (m *CreatorMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CreatorMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Creator edge %s", name)
+}
+
+// TiktokCreatorMutation represents an operation that mutates the TiktokCreator nodes in the graph.
+type TiktokCreatorMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *int
+	create_time              *time.Time
+	update_time              *time.Time
+	creator_id               *string
+	creator_name             *string
+	creator_nickname         *string
+	region                   *string
+	product_categories       *[]string
+	appendproduct_categories []string
+	follower_count           *uint32
+	addfollower_count        *int32
+	video_avg_view_cnt       *uint32
+	addvideo_avg_view_cnt    *int32
+	video_pub_cnt            *uint32
+	addvideo_pub_cnt         *int32
+	ec_video_avg_view_cnt    *uint32
+	addec_video_avg_view_cnt *int32
+	creator_oecuid           *string
+	creator_ttuid            *string
+	clearedFields            map[string]struct{}
+	done                     bool
+	oldValue                 func(context.Context) (*TiktokCreator, error)
+	predicates               []predicate.TiktokCreator
+}
+
+var _ ent.Mutation = (*TiktokCreatorMutation)(nil)
+
+// tiktokcreatorOption allows management of the mutation configuration using functional options.
+type tiktokcreatorOption func(*TiktokCreatorMutation)
+
+// newTiktokCreatorMutation creates new mutation for the TiktokCreator entity.
+func newTiktokCreatorMutation(c config, op Op, opts ...tiktokcreatorOption) *TiktokCreatorMutation {
+	m := &TiktokCreatorMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTiktokCreator,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTiktokCreatorID sets the ID field of the mutation.
+func withTiktokCreatorID(id int) tiktokcreatorOption {
+	return func(m *TiktokCreatorMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TiktokCreator
+		)
+		m.oldValue = func(ctx context.Context) (*TiktokCreator, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TiktokCreator.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTiktokCreator sets the old TiktokCreator of the mutation.
+func withTiktokCreator(node *TiktokCreator) tiktokcreatorOption {
+	return func(m *TiktokCreatorMutation) {
+		m.oldValue = func(context.Context) (*TiktokCreator, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TiktokCreatorMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TiktokCreatorMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TiktokCreatorMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TiktokCreatorMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TiktokCreator.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *TiktokCreatorMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *TiktokCreatorMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *TiktokCreatorMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *TiktokCreatorMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *TiktokCreatorMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *TiktokCreatorMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetCreatorID sets the "creator_id" field.
+func (m *TiktokCreatorMutation) SetCreatorID(s string) {
+	m.creator_id = &s
+}
+
+// CreatorID returns the value of the "creator_id" field in the mutation.
+func (m *TiktokCreatorMutation) CreatorID() (r string, exists bool) {
+	v := m.creator_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatorID returns the old "creator_id" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldCreatorID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatorID: %w", err)
+	}
+	return oldValue.CreatorID, nil
+}
+
+// ResetCreatorID resets all changes to the "creator_id" field.
+func (m *TiktokCreatorMutation) ResetCreatorID() {
+	m.creator_id = nil
+}
+
+// SetCreatorName sets the "creator_name" field.
+func (m *TiktokCreatorMutation) SetCreatorName(s string) {
+	m.creator_name = &s
+}
+
+// CreatorName returns the value of the "creator_name" field in the mutation.
+func (m *TiktokCreatorMutation) CreatorName() (r string, exists bool) {
+	v := m.creator_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatorName returns the old "creator_name" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldCreatorName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatorName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatorName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatorName: %w", err)
+	}
+	return oldValue.CreatorName, nil
+}
+
+// ResetCreatorName resets all changes to the "creator_name" field.
+func (m *TiktokCreatorMutation) ResetCreatorName() {
+	m.creator_name = nil
+}
+
+// SetCreatorNickname sets the "creator_nickname" field.
+func (m *TiktokCreatorMutation) SetCreatorNickname(s string) {
+	m.creator_nickname = &s
+}
+
+// CreatorNickname returns the value of the "creator_nickname" field in the mutation.
+func (m *TiktokCreatorMutation) CreatorNickname() (r string, exists bool) {
+	v := m.creator_nickname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatorNickname returns the old "creator_nickname" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldCreatorNickname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatorNickname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatorNickname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatorNickname: %w", err)
+	}
+	return oldValue.CreatorNickname, nil
+}
+
+// ResetCreatorNickname resets all changes to the "creator_nickname" field.
+func (m *TiktokCreatorMutation) ResetCreatorNickname() {
+	m.creator_nickname = nil
+}
+
+// SetRegion sets the "region" field.
+func (m *TiktokCreatorMutation) SetRegion(s string) {
+	m.region = &s
+}
+
+// Region returns the value of the "region" field in the mutation.
+func (m *TiktokCreatorMutation) Region() (r string, exists bool) {
+	v := m.region
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRegion returns the old "region" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldRegion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRegion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRegion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRegion: %w", err)
+	}
+	return oldValue.Region, nil
+}
+
+// ResetRegion resets all changes to the "region" field.
+func (m *TiktokCreatorMutation) ResetRegion() {
+	m.region = nil
+}
+
+// SetProductCategories sets the "product_categories" field.
+func (m *TiktokCreatorMutation) SetProductCategories(s []string) {
+	m.product_categories = &s
+	m.appendproduct_categories = nil
+}
+
+// ProductCategories returns the value of the "product_categories" field in the mutation.
+func (m *TiktokCreatorMutation) ProductCategories() (r []string, exists bool) {
+	v := m.product_categories
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProductCategories returns the old "product_categories" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldProductCategories(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProductCategories is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProductCategories requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProductCategories: %w", err)
+	}
+	return oldValue.ProductCategories, nil
+}
+
+// AppendProductCategories adds s to the "product_categories" field.
+func (m *TiktokCreatorMutation) AppendProductCategories(s []string) {
+	m.appendproduct_categories = append(m.appendproduct_categories, s...)
+}
+
+// AppendedProductCategories returns the list of values that were appended to the "product_categories" field in this mutation.
+func (m *TiktokCreatorMutation) AppendedProductCategories() ([]string, bool) {
+	if len(m.appendproduct_categories) == 0 {
+		return nil, false
+	}
+	return m.appendproduct_categories, true
+}
+
+// ResetProductCategories resets all changes to the "product_categories" field.
+func (m *TiktokCreatorMutation) ResetProductCategories() {
+	m.product_categories = nil
+	m.appendproduct_categories = nil
+}
+
+// SetFollowerCount sets the "follower_count" field.
+func (m *TiktokCreatorMutation) SetFollowerCount(u uint32) {
+	m.follower_count = &u
+	m.addfollower_count = nil
+}
+
+// FollowerCount returns the value of the "follower_count" field in the mutation.
+func (m *TiktokCreatorMutation) FollowerCount() (r uint32, exists bool) {
+	v := m.follower_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowerCount returns the old "follower_count" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldFollowerCount(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowerCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowerCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowerCount: %w", err)
+	}
+	return oldValue.FollowerCount, nil
+}
+
+// AddFollowerCount adds u to the "follower_count" field.
+func (m *TiktokCreatorMutation) AddFollowerCount(u int32) {
+	if m.addfollower_count != nil {
+		*m.addfollower_count += u
+	} else {
+		m.addfollower_count = &u
+	}
+}
+
+// AddedFollowerCount returns the value that was added to the "follower_count" field in this mutation.
+func (m *TiktokCreatorMutation) AddedFollowerCount() (r int32, exists bool) {
+	v := m.addfollower_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowerCount resets all changes to the "follower_count" field.
+func (m *TiktokCreatorMutation) ResetFollowerCount() {
+	m.follower_count = nil
+	m.addfollower_count = nil
+}
+
+// SetVideoAvgViewCnt sets the "video_avg_view_cnt" field.
+func (m *TiktokCreatorMutation) SetVideoAvgViewCnt(u uint32) {
+	m.video_avg_view_cnt = &u
+	m.addvideo_avg_view_cnt = nil
+}
+
+// VideoAvgViewCnt returns the value of the "video_avg_view_cnt" field in the mutation.
+func (m *TiktokCreatorMutation) VideoAvgViewCnt() (r uint32, exists bool) {
+	v := m.video_avg_view_cnt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVideoAvgViewCnt returns the old "video_avg_view_cnt" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldVideoAvgViewCnt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVideoAvgViewCnt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVideoAvgViewCnt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVideoAvgViewCnt: %w", err)
+	}
+	return oldValue.VideoAvgViewCnt, nil
+}
+
+// AddVideoAvgViewCnt adds u to the "video_avg_view_cnt" field.
+func (m *TiktokCreatorMutation) AddVideoAvgViewCnt(u int32) {
+	if m.addvideo_avg_view_cnt != nil {
+		*m.addvideo_avg_view_cnt += u
+	} else {
+		m.addvideo_avg_view_cnt = &u
+	}
+}
+
+// AddedVideoAvgViewCnt returns the value that was added to the "video_avg_view_cnt" field in this mutation.
+func (m *TiktokCreatorMutation) AddedVideoAvgViewCnt() (r int32, exists bool) {
+	v := m.addvideo_avg_view_cnt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVideoAvgViewCnt resets all changes to the "video_avg_view_cnt" field.
+func (m *TiktokCreatorMutation) ResetVideoAvgViewCnt() {
+	m.video_avg_view_cnt = nil
+	m.addvideo_avg_view_cnt = nil
+}
+
+// SetVideoPubCnt sets the "video_pub_cnt" field.
+func (m *TiktokCreatorMutation) SetVideoPubCnt(u uint32) {
+	m.video_pub_cnt = &u
+	m.addvideo_pub_cnt = nil
+}
+
+// VideoPubCnt returns the value of the "video_pub_cnt" field in the mutation.
+func (m *TiktokCreatorMutation) VideoPubCnt() (r uint32, exists bool) {
+	v := m.video_pub_cnt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVideoPubCnt returns the old "video_pub_cnt" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldVideoPubCnt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVideoPubCnt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVideoPubCnt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVideoPubCnt: %w", err)
+	}
+	return oldValue.VideoPubCnt, nil
+}
+
+// AddVideoPubCnt adds u to the "video_pub_cnt" field.
+func (m *TiktokCreatorMutation) AddVideoPubCnt(u int32) {
+	if m.addvideo_pub_cnt != nil {
+		*m.addvideo_pub_cnt += u
+	} else {
+		m.addvideo_pub_cnt = &u
+	}
+}
+
+// AddedVideoPubCnt returns the value that was added to the "video_pub_cnt" field in this mutation.
+func (m *TiktokCreatorMutation) AddedVideoPubCnt() (r int32, exists bool) {
+	v := m.addvideo_pub_cnt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVideoPubCnt resets all changes to the "video_pub_cnt" field.
+func (m *TiktokCreatorMutation) ResetVideoPubCnt() {
+	m.video_pub_cnt = nil
+	m.addvideo_pub_cnt = nil
+}
+
+// SetEcVideoAvgViewCnt sets the "ec_video_avg_view_cnt" field.
+func (m *TiktokCreatorMutation) SetEcVideoAvgViewCnt(u uint32) {
+	m.ec_video_avg_view_cnt = &u
+	m.addec_video_avg_view_cnt = nil
+}
+
+// EcVideoAvgViewCnt returns the value of the "ec_video_avg_view_cnt" field in the mutation.
+func (m *TiktokCreatorMutation) EcVideoAvgViewCnt() (r uint32, exists bool) {
+	v := m.ec_video_avg_view_cnt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEcVideoAvgViewCnt returns the old "ec_video_avg_view_cnt" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldEcVideoAvgViewCnt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEcVideoAvgViewCnt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEcVideoAvgViewCnt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEcVideoAvgViewCnt: %w", err)
+	}
+	return oldValue.EcVideoAvgViewCnt, nil
+}
+
+// AddEcVideoAvgViewCnt adds u to the "ec_video_avg_view_cnt" field.
+func (m *TiktokCreatorMutation) AddEcVideoAvgViewCnt(u int32) {
+	if m.addec_video_avg_view_cnt != nil {
+		*m.addec_video_avg_view_cnt += u
+	} else {
+		m.addec_video_avg_view_cnt = &u
+	}
+}
+
+// AddedEcVideoAvgViewCnt returns the value that was added to the "ec_video_avg_view_cnt" field in this mutation.
+func (m *TiktokCreatorMutation) AddedEcVideoAvgViewCnt() (r int32, exists bool) {
+	v := m.addec_video_avg_view_cnt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetEcVideoAvgViewCnt resets all changes to the "ec_video_avg_view_cnt" field.
+func (m *TiktokCreatorMutation) ResetEcVideoAvgViewCnt() {
+	m.ec_video_avg_view_cnt = nil
+	m.addec_video_avg_view_cnt = nil
+}
+
+// SetCreatorOecuid sets the "creator_oecuid" field.
+func (m *TiktokCreatorMutation) SetCreatorOecuid(s string) {
+	m.creator_oecuid = &s
+}
+
+// CreatorOecuid returns the value of the "creator_oecuid" field in the mutation.
+func (m *TiktokCreatorMutation) CreatorOecuid() (r string, exists bool) {
+	v := m.creator_oecuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatorOecuid returns the old "creator_oecuid" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldCreatorOecuid(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatorOecuid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatorOecuid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatorOecuid: %w", err)
+	}
+	return oldValue.CreatorOecuid, nil
+}
+
+// ResetCreatorOecuid resets all changes to the "creator_oecuid" field.
+func (m *TiktokCreatorMutation) ResetCreatorOecuid() {
+	m.creator_oecuid = nil
+}
+
+// SetCreatorTtuid sets the "creator_ttuid" field.
+func (m *TiktokCreatorMutation) SetCreatorTtuid(s string) {
+	m.creator_ttuid = &s
+}
+
+// CreatorTtuid returns the value of the "creator_ttuid" field in the mutation.
+func (m *TiktokCreatorMutation) CreatorTtuid() (r string, exists bool) {
+	v := m.creator_ttuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatorTtuid returns the old "creator_ttuid" field's value of the TiktokCreator entity.
+// If the TiktokCreator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TiktokCreatorMutation) OldCreatorTtuid(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatorTtuid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatorTtuid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatorTtuid: %w", err)
+	}
+	return oldValue.CreatorTtuid, nil
+}
+
+// ResetCreatorTtuid resets all changes to the "creator_ttuid" field.
+func (m *TiktokCreatorMutation) ResetCreatorTtuid() {
+	m.creator_ttuid = nil
+}
+
+// Where appends a list predicates to the TiktokCreatorMutation builder.
+func (m *TiktokCreatorMutation) Where(ps ...predicate.TiktokCreator) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TiktokCreatorMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TiktokCreator).
+func (m *TiktokCreatorMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TiktokCreatorMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.create_time != nil {
+		fields = append(fields, tiktokcreator.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, tiktokcreator.FieldUpdateTime)
+	}
+	if m.creator_id != nil {
+		fields = append(fields, tiktokcreator.FieldCreatorID)
+	}
+	if m.creator_name != nil {
+		fields = append(fields, tiktokcreator.FieldCreatorName)
+	}
+	if m.creator_nickname != nil {
+		fields = append(fields, tiktokcreator.FieldCreatorNickname)
+	}
+	if m.region != nil {
+		fields = append(fields, tiktokcreator.FieldRegion)
+	}
+	if m.product_categories != nil {
+		fields = append(fields, tiktokcreator.FieldProductCategories)
+	}
+	if m.follower_count != nil {
+		fields = append(fields, tiktokcreator.FieldFollowerCount)
+	}
+	if m.video_avg_view_cnt != nil {
+		fields = append(fields, tiktokcreator.FieldVideoAvgViewCnt)
+	}
+	if m.video_pub_cnt != nil {
+		fields = append(fields, tiktokcreator.FieldVideoPubCnt)
+	}
+	if m.ec_video_avg_view_cnt != nil {
+		fields = append(fields, tiktokcreator.FieldEcVideoAvgViewCnt)
+	}
+	if m.creator_oecuid != nil {
+		fields = append(fields, tiktokcreator.FieldCreatorOecuid)
+	}
+	if m.creator_ttuid != nil {
+		fields = append(fields, tiktokcreator.FieldCreatorTtuid)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TiktokCreatorMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tiktokcreator.FieldCreateTime:
+		return m.CreateTime()
+	case tiktokcreator.FieldUpdateTime:
+		return m.UpdateTime()
+	case tiktokcreator.FieldCreatorID:
+		return m.CreatorID()
+	case tiktokcreator.FieldCreatorName:
+		return m.CreatorName()
+	case tiktokcreator.FieldCreatorNickname:
+		return m.CreatorNickname()
+	case tiktokcreator.FieldRegion:
+		return m.Region()
+	case tiktokcreator.FieldProductCategories:
+		return m.ProductCategories()
+	case tiktokcreator.FieldFollowerCount:
+		return m.FollowerCount()
+	case tiktokcreator.FieldVideoAvgViewCnt:
+		return m.VideoAvgViewCnt()
+	case tiktokcreator.FieldVideoPubCnt:
+		return m.VideoPubCnt()
+	case tiktokcreator.FieldEcVideoAvgViewCnt:
+		return m.EcVideoAvgViewCnt()
+	case tiktokcreator.FieldCreatorOecuid:
+		return m.CreatorOecuid()
+	case tiktokcreator.FieldCreatorTtuid:
+		return m.CreatorTtuid()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TiktokCreatorMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tiktokcreator.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case tiktokcreator.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case tiktokcreator.FieldCreatorID:
+		return m.OldCreatorID(ctx)
+	case tiktokcreator.FieldCreatorName:
+		return m.OldCreatorName(ctx)
+	case tiktokcreator.FieldCreatorNickname:
+		return m.OldCreatorNickname(ctx)
+	case tiktokcreator.FieldRegion:
+		return m.OldRegion(ctx)
+	case tiktokcreator.FieldProductCategories:
+		return m.OldProductCategories(ctx)
+	case tiktokcreator.FieldFollowerCount:
+		return m.OldFollowerCount(ctx)
+	case tiktokcreator.FieldVideoAvgViewCnt:
+		return m.OldVideoAvgViewCnt(ctx)
+	case tiktokcreator.FieldVideoPubCnt:
+		return m.OldVideoPubCnt(ctx)
+	case tiktokcreator.FieldEcVideoAvgViewCnt:
+		return m.OldEcVideoAvgViewCnt(ctx)
+	case tiktokcreator.FieldCreatorOecuid:
+		return m.OldCreatorOecuid(ctx)
+	case tiktokcreator.FieldCreatorTtuid:
+		return m.OldCreatorTtuid(ctx)
+	}
+	return nil, fmt.Errorf("unknown TiktokCreator field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TiktokCreatorMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tiktokcreator.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case tiktokcreator.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case tiktokcreator.FieldCreatorID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatorID(v)
+		return nil
+	case tiktokcreator.FieldCreatorName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatorName(v)
+		return nil
+	case tiktokcreator.FieldCreatorNickname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatorNickname(v)
+		return nil
+	case tiktokcreator.FieldRegion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRegion(v)
+		return nil
+	case tiktokcreator.FieldProductCategories:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProductCategories(v)
+		return nil
+	case tiktokcreator.FieldFollowerCount:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowerCount(v)
+		return nil
+	case tiktokcreator.FieldVideoAvgViewCnt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVideoAvgViewCnt(v)
+		return nil
+	case tiktokcreator.FieldVideoPubCnt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVideoPubCnt(v)
+		return nil
+	case tiktokcreator.FieldEcVideoAvgViewCnt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEcVideoAvgViewCnt(v)
+		return nil
+	case tiktokcreator.FieldCreatorOecuid:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatorOecuid(v)
+		return nil
+	case tiktokcreator.FieldCreatorTtuid:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatorTtuid(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TiktokCreator field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TiktokCreatorMutation) AddedFields() []string {
+	var fields []string
+	if m.addfollower_count != nil {
+		fields = append(fields, tiktokcreator.FieldFollowerCount)
+	}
+	if m.addvideo_avg_view_cnt != nil {
+		fields = append(fields, tiktokcreator.FieldVideoAvgViewCnt)
+	}
+	if m.addvideo_pub_cnt != nil {
+		fields = append(fields, tiktokcreator.FieldVideoPubCnt)
+	}
+	if m.addec_video_avg_view_cnt != nil {
+		fields = append(fields, tiktokcreator.FieldEcVideoAvgViewCnt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TiktokCreatorMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case tiktokcreator.FieldFollowerCount:
+		return m.AddedFollowerCount()
+	case tiktokcreator.FieldVideoAvgViewCnt:
+		return m.AddedVideoAvgViewCnt()
+	case tiktokcreator.FieldVideoPubCnt:
+		return m.AddedVideoPubCnt()
+	case tiktokcreator.FieldEcVideoAvgViewCnt:
+		return m.AddedEcVideoAvgViewCnt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TiktokCreatorMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case tiktokcreator.FieldFollowerCount:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowerCount(v)
+		return nil
+	case tiktokcreator.FieldVideoAvgViewCnt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVideoAvgViewCnt(v)
+		return nil
+	case tiktokcreator.FieldVideoPubCnt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVideoPubCnt(v)
+		return nil
+	case tiktokcreator.FieldEcVideoAvgViewCnt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEcVideoAvgViewCnt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TiktokCreator numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TiktokCreatorMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TiktokCreatorMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TiktokCreatorMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TiktokCreator nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TiktokCreatorMutation) ResetField(name string) error {
+	switch name {
+	case tiktokcreator.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case tiktokcreator.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case tiktokcreator.FieldCreatorID:
+		m.ResetCreatorID()
+		return nil
+	case tiktokcreator.FieldCreatorName:
+		m.ResetCreatorName()
+		return nil
+	case tiktokcreator.FieldCreatorNickname:
+		m.ResetCreatorNickname()
+		return nil
+	case tiktokcreator.FieldRegion:
+		m.ResetRegion()
+		return nil
+	case tiktokcreator.FieldProductCategories:
+		m.ResetProductCategories()
+		return nil
+	case tiktokcreator.FieldFollowerCount:
+		m.ResetFollowerCount()
+		return nil
+	case tiktokcreator.FieldVideoAvgViewCnt:
+		m.ResetVideoAvgViewCnt()
+		return nil
+	case tiktokcreator.FieldVideoPubCnt:
+		m.ResetVideoPubCnt()
+		return nil
+	case tiktokcreator.FieldEcVideoAvgViewCnt:
+		m.ResetEcVideoAvgViewCnt()
+		return nil
+	case tiktokcreator.FieldCreatorOecuid:
+		m.ResetCreatorOecuid()
+		return nil
+	case tiktokcreator.FieldCreatorTtuid:
+		m.ResetCreatorTtuid()
+		return nil
+	}
+	return fmt.Errorf("unknown TiktokCreator field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TiktokCreatorMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TiktokCreatorMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TiktokCreatorMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TiktokCreatorMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TiktokCreatorMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TiktokCreatorMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TiktokCreatorMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TiktokCreator unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TiktokCreatorMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TiktokCreator edge %s", name)
 }

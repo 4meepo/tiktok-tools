@@ -7,6 +7,7 @@ import (
 
 	"github.com/4meepo/tiktok-tools/ent/creator"
 	"github.com/4meepo/tiktok-tools/ent/schema"
+	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -72,4 +73,63 @@ func init() {
 	creatorDescWhatsapp := creatorFields[10].Descriptor()
 	// creator.WhatsappValidator is a validator for the "whatsapp" field. It is called by the builders before save.
 	creator.WhatsappValidator = creatorDescWhatsapp.Validators[0].(func(string) error)
+	tiktokcreatorMixin := schema.TiktokCreator{}.Mixin()
+	tiktokcreatorMixinFields0 := tiktokcreatorMixin[0].Fields()
+	_ = tiktokcreatorMixinFields0
+	tiktokcreatorFields := schema.TiktokCreator{}.Fields()
+	_ = tiktokcreatorFields
+	// tiktokcreatorDescCreateTime is the schema descriptor for create_time field.
+	tiktokcreatorDescCreateTime := tiktokcreatorMixinFields0[0].Descriptor()
+	// tiktokcreator.DefaultCreateTime holds the default value on creation for the create_time field.
+	tiktokcreator.DefaultCreateTime = tiktokcreatorDescCreateTime.Default.(func() time.Time)
+	// tiktokcreatorDescUpdateTime is the schema descriptor for update_time field.
+	tiktokcreatorDescUpdateTime := tiktokcreatorMixinFields0[1].Descriptor()
+	// tiktokcreator.DefaultUpdateTime holds the default value on creation for the update_time field.
+	tiktokcreator.DefaultUpdateTime = tiktokcreatorDescUpdateTime.Default.(func() time.Time)
+	// tiktokcreator.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	tiktokcreator.UpdateDefaultUpdateTime = tiktokcreatorDescUpdateTime.UpdateDefault.(func() time.Time)
+	// tiktokcreatorDescCreatorID is the schema descriptor for creator_id field.
+	tiktokcreatorDescCreatorID := tiktokcreatorFields[0].Descriptor()
+	// tiktokcreator.CreatorIDValidator is a validator for the "creator_id" field. It is called by the builders before save.
+	tiktokcreator.CreatorIDValidator = tiktokcreatorDescCreatorID.Validators[0].(func(string) error)
+	// tiktokcreatorDescCreatorName is the schema descriptor for creator_name field.
+	tiktokcreatorDescCreatorName := tiktokcreatorFields[1].Descriptor()
+	// tiktokcreator.CreatorNameValidator is a validator for the "creator_name" field. It is called by the builders before save.
+	tiktokcreator.CreatorNameValidator = tiktokcreatorDescCreatorName.Validators[0].(func(string) error)
+	// tiktokcreatorDescCreatorNickname is the schema descriptor for creator_nickname field.
+	tiktokcreatorDescCreatorNickname := tiktokcreatorFields[2].Descriptor()
+	// tiktokcreator.CreatorNicknameValidator is a validator for the "creator_nickname" field. It is called by the builders before save.
+	tiktokcreator.CreatorNicknameValidator = tiktokcreatorDescCreatorNickname.Validators[0].(func(string) error)
+	// tiktokcreatorDescRegion is the schema descriptor for region field.
+	tiktokcreatorDescRegion := tiktokcreatorFields[3].Descriptor()
+	// tiktokcreator.RegionValidator is a validator for the "region" field. It is called by the builders before save.
+	tiktokcreator.RegionValidator = tiktokcreatorDescRegion.Validators[0].(func(string) error)
+	// tiktokcreatorDescProductCategories is the schema descriptor for product_categories field.
+	tiktokcreatorDescProductCategories := tiktokcreatorFields[4].Descriptor()
+	// tiktokcreator.DefaultProductCategories holds the default value on creation for the product_categories field.
+	tiktokcreator.DefaultProductCategories = tiktokcreatorDescProductCategories.Default.([]string)
+	// tiktokcreatorDescFollowerCount is the schema descriptor for follower_count field.
+	tiktokcreatorDescFollowerCount := tiktokcreatorFields[5].Descriptor()
+	// tiktokcreator.DefaultFollowerCount holds the default value on creation for the follower_count field.
+	tiktokcreator.DefaultFollowerCount = tiktokcreatorDescFollowerCount.Default.(uint32)
+	// tiktokcreatorDescVideoAvgViewCnt is the schema descriptor for video_avg_view_cnt field.
+	tiktokcreatorDescVideoAvgViewCnt := tiktokcreatorFields[6].Descriptor()
+	// tiktokcreator.DefaultVideoAvgViewCnt holds the default value on creation for the video_avg_view_cnt field.
+	tiktokcreator.DefaultVideoAvgViewCnt = tiktokcreatorDescVideoAvgViewCnt.Default.(uint32)
+	// tiktokcreatorDescVideoPubCnt is the schema descriptor for video_pub_cnt field.
+	tiktokcreatorDescVideoPubCnt := tiktokcreatorFields[7].Descriptor()
+	// tiktokcreator.DefaultVideoPubCnt holds the default value on creation for the video_pub_cnt field.
+	tiktokcreator.DefaultVideoPubCnt = tiktokcreatorDescVideoPubCnt.Default.(uint32)
+	// tiktokcreatorDescEcVideoAvgViewCnt is the schema descriptor for ec_video_avg_view_cnt field.
+	tiktokcreatorDescEcVideoAvgViewCnt := tiktokcreatorFields[8].Descriptor()
+	// tiktokcreator.DefaultEcVideoAvgViewCnt holds the default value on creation for the ec_video_avg_view_cnt field.
+	tiktokcreator.DefaultEcVideoAvgViewCnt = tiktokcreatorDescEcVideoAvgViewCnt.Default.(uint32)
+	// tiktokcreatorDescCreatorOecuid is the schema descriptor for creator_oecuid field.
+	tiktokcreatorDescCreatorOecuid := tiktokcreatorFields[9].Descriptor()
+	// tiktokcreator.DefaultCreatorOecuid holds the default value on creation for the creator_oecuid field.
+	tiktokcreator.DefaultCreatorOecuid = tiktokcreatorDescCreatorOecuid.Default.(string)
+	// tiktokcreatorDescCreatorTtuid is the schema descriptor for creator_ttuid field.
+	tiktokcreatorDescCreatorTtuid := tiktokcreatorFields[10].Descriptor()
+	// tiktokcreator.DefaultCreatorTtuid holds the default value on creation for the creator_ttuid field.
+	tiktokcreator.DefaultCreatorTtuid = tiktokcreatorDescCreatorTtuid.Default.(string)
 }
