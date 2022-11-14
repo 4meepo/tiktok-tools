@@ -17,13 +17,13 @@ import (
 	"github.com/4meepo/tiktok-tools/ent/creator"
 )
 
-func CrawlCreators(xianzhiRegion, authorization, userId string, fromPage, batchSize int, duration time.Duration) error {
+func CrawlCreators(host, xianzhiRegion, authorization, userId string, fromPage, batchSize int, duration time.Duration) error {
 	rand.Seed(time.Now().Unix())
 
 	ctx, cancelFn := context.WithCancel(context.Background())
 	go elegant.Shutdown(cancelFn)
 
-	entClient := ent.GetInstance()
+	entClient := ent.GetInstance(host)
 
 	var size = 100
 	var _count = 0

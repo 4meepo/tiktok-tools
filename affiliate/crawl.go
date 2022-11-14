@@ -18,13 +18,13 @@ var httpClient = http.Client{
 	Timeout: time.Second * 8,
 }
 
-func CrawlAffiliateCreators(curlSample, region string, duration time.Duration, pageSize, maxBatch int) error {
+func CrawlAffiliateCreators(host, curlSample, region string, duration time.Duration, pageSize, maxBatch int) error {
 	ctx, cancelFn := context.WithCancel(context.Background())
-	ec := ent.GetInstance()
+	ec := ent.GetInstance(host)
 
 	go elegant.Shutdown(cancelFn)
 
-	var followerCntMax = getMinFollowerCount(region)
+	var followerCntMax = getMinFollowerCount(host, region)
 
 	// 此api每个请求最多返回2000条数据, 我们每爬maxBatch条就休息一段时间,下次重新开始爬取
 	maxPagePerBatch := maxBatch / pageSize // 每次最多爬取10页
@@ -41,8 +41,8 @@ func CrawlAffiliateCreators(curlSample, region string, duration time.Duration, p
 		if page == maxPagePerBatch {
 			log.Printf("防止封号 休息 %s 后继续... \n", duration.String())
 			time.Sleep(duration)
-			page = 0                                     // 重新开始
-			followerCntMax = getMinFollowerCount(region) // 重新获取最小粉丝数
+			page = 0                                           // 重新开始
+			followerCntMax = getMinFollowerCount(host, region) // 重新获取最小粉丝数
 		}
 
 		var nextItemCursor *int
@@ -170,8 +170,8 @@ func randomDuration() time.Duration {
 	return time.Duration(s) * time.Second
 }
 
-func getMinFollowerCount(region string) *uint32 {
-	ec := ent.GetInstance()
+func getMinFollowerCount(host, region string) *uint32 {
+	ec := ent.GetInstance(host)
 	// 从数据库中获取最小的粉丝数, 作为下一次的最大粉丝数
 	lastC, err := ec.TiktokCreator.Query().
 		Where(tiktokcreator.RegionEQ(region)).

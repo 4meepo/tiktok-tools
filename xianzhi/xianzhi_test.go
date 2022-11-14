@@ -26,7 +26,7 @@ func Test_fetchXianzhiNext(t *testing.T) {
 func TestCrawlCreators(t *testing.T) {
 	authorization := "c5256c44-a57c-479c-8219-6032f35cf792"
 	userId := "8a669b48840f8e7501840f8e75a90000"
-	CrawlCreators("PH", authorization, userId, 343, 50, time.Second)
+	CrawlCreators("ecs", "PH", authorization, userId, 343, 50, time.Second)
 }
 
 func Test_randomDuration(t *testing.T) {

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 
@@ -14,9 +15,9 @@ import (
 var instance *Client
 var once sync.Once
 
-func GetInstance() *Client {
+func GetInstance(host string) *Client {
 	once.Do(func() {
-		client, err := Open("mysql", "root:pass@tcp(ecs:3306)/tiktok?parseTime=True")
+		client, err := Open("mysql", fmt.Sprintf("root:pass@tcp(%s:3306)/tiktok?parseTime=True", host))
 		if err != nil {
 			log.Fatalf("failed opening connection to mysql: %v", err)
 		}

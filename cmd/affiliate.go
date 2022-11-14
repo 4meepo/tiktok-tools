@@ -1,6 +1,5 @@
 /*
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -47,15 +46,17 @@ to quickly create a Cobra application.`,
 			return errors.New("region 不能为空")
 		}
 
-		return affiliate.CrawlAffiliateCreators(string(bytes), affiliateRegion, d, affiliatePageSize, affiliateMaxBatch)
+		return affiliate.CrawlAffiliateCreators(mysqlHost, string(bytes), affiliateRegion, d, affiliatePageSize, affiliateMaxBatch)
 	},
 }
 
 var affiliateCurlSampleFile, affiliateRegion, affiliateSleepDuration string
 var affiliatePageSize, affiliateMaxBatch int
+var mysqlHost string
 
 func init() {
 	crawlCmd.AddCommand(affiliateCmd)
+	affiliateCmd.Flags().StringVarP(&mysqlHost, "mysqlhost", "", "ecs", "mysql host")
 	affiliateCmd.Flags().StringVarP(&affiliateCurlSampleFile, "file", "f", "", "curl 命令所处的文件")
 	affiliateCmd.Flags().StringVarP(&affiliateRegion, "region", "r", "", "curl 命令所处的文件")
 	affiliateCmd.Flags().StringVarP(&affiliateSleepDuration, "duration", "d", "", "每爬取1000条数据后休息的时间")

@@ -30,7 +30,7 @@ var xianzhiCmd = &cobra.Command{
 		if d, err = time.ParseDuration(xianzhiDuration); err != nil {
 			return errors.New("duration 格式错误")
 		}
-		return xianzhi.CrawlCreators(xianzhiRegion, authorization, xianzhiUserId, xianzhiFromPage, batchSize, d)
+		return xianzhi.CrawlCreators("ecs", xianzhiRegion, authorization, xianzhiUserId, xianzhiFromPage, batchSize, d)
 	},
 }
 
