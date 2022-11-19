@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/4meepo/tiktok-tools/curl"
 	"github.com/sirupsen/logrus"
@@ -37,6 +38,7 @@ func Invite(curlString string) error {
 	if confirm == "y" {
 
 		for _, id := range creatrosID {
+			time.Sleep(1 * time.Second)
 			payload.CreatorID = id
 			// 发送邀约请求
 			bs, _ := json.Marshal(payload)
