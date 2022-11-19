@@ -26,9 +26,9 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// 读取 curl 命令
-		f, err := os.Open(affiliateCurlSampleFile)
+		f, err := os.Open(curlFile)
 		if err != nil {
-			return fmt.Errorf("打开文件%s失败: %w", affiliateCurlSampleFile, err)
+			return fmt.Errorf("打开文件%s失败: %w", curlFile, err)
 		}
 		defer f.Close()
 		bytes, err := io.ReadAll(f)
@@ -50,14 +50,13 @@ to quickly create a Cobra application.`,
 	},
 }
 
-var affiliateCurlSampleFile, affiliateRegion, affiliateSleepDuration string
+var affiliateRegion, affiliateSleepDuration string
 var affiliatePageSize, affiliateMaxBatch int
 var mysqlHost string
 
 func init() {
 	crawlCmd.AddCommand(affiliateCmd)
 	affiliateCmd.Flags().StringVarP(&mysqlHost, "mysqlhost", "", "ecs", "mysql host")
-	affiliateCmd.Flags().StringVarP(&affiliateCurlSampleFile, "file", "f", "", "curl 命令所处的文件")
 	affiliateCmd.Flags().StringVarP(&affiliateRegion, "region", "r", "", "curl 命令所处的文件")
 	affiliateCmd.Flags().StringVarP(&affiliateSleepDuration, "duration", "d", "", "每爬取1000条数据后休息的时间")
 	affiliateCmd.Flags().IntVarP(&affiliatePageSize, "pageSize", "p", 20, "每页的数据量")
