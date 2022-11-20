@@ -50,8 +50,8 @@ func init() {
 	crawlCmd.AddCommand(affiliateCmd)
 	affiliateCmd.Flags().StringVarP(&mysqlHost, "mysqlhost", "", "ecs", "mysql host")
 	affiliateCmd.Flags().StringVarP(&affiliateSleepDuration, "duration", "d", "", "每爬取1000条数据后休息的时间")
-	affiliateCmd.Flags().IntVarP(&affiliatePageSize, "pageSize", "p", 20, "每页的数据量")
-	affiliateCmd.Flags().IntVarP(&threshold, "threshold", "m", 50, "连续发起多少次请求后休息")
+	affiliateCmd.Flags().IntVarP(&affiliatePageSize, "pageSize", "", 20, "每页的数据量")
+	affiliateCmd.Flags().IntVarP(&threshold, "threshold", "", 50, "连续发起多少次请求后休息")
 	affiliateCmd.Flags().IntVarP(&affiliateFollowerFrom, "followerFrom", "", 0, "从多少粉丝开始爬取, 间隔为100")
 
 }
