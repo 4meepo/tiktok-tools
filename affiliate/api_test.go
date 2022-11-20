@@ -33,11 +33,11 @@ func Test_searchCreators(t *testing.T) {
 
 	`
 
-	var maxFollowerCount uint32 = 100000
+	var maxFollowerCount int = 100000
 	rsp, err := searchCreators(curl, searchCreatorsRequest{
 		Request: requestPayload{
 			Algorithm:      3,
-			FollowerCntMax: &maxFollowerCount,
+			FollowerCntMax: maxFollowerCount,
 			Pagination: pagination{
 				Size:           20,
 				Page:           0,

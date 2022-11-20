@@ -16,8 +16,8 @@ type TiktokCreator struct {
 func (TiktokCreator) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("creator_id").MaxLen(30),
-		field.String("creator_name").MaxLen(64),
-		field.String("creator_nickname").MaxLen(64),
+		field.String("creator_name").MaxLen(100),
+		field.String("creator_nickname").MaxLen(100),
 		field.String("region").MaxLen(8),
 		field.Strings("product_categories").Default([]string{}),
 		field.Uint32("follower_count").Default(0),

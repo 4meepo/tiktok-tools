@@ -1,6 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -17,13 +14,7 @@ import (
 // affiliateCmd represents the affiliate command
 var affiliateCmd = &cobra.Command{
 	Use:   "affiliate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "爬取tiktok 达人信息",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// 读取 curl 命令
 		f, err := os.Open(curlFile)
@@ -42,24 +33,25 @@ to quickly create a Cobra application.`,
 			return err
 		}
 
-		if affiliateRegion == "" {
-			return errors.New("region 不能为空")
+		if affiliateFollowerFrom <= 0 {
+			return errors.New("followerFrom 不能小于等于0")
 		}
 
-		return affiliate.CrawlAffiliateCreators(mysqlHost, string(bytes), affiliateRegion, d, affiliatePageSize, affiliateMaxBatch)
+		return affiliate.CrawlAffiliateCreators(mysqlHost, string(bytes), d, affiliateFollowerFrom, affiliatePageSize, threshold)
 	},
 }
 
-var affiliateRegion, affiliateSleepDuration string
-var affiliatePageSize, affiliateMaxBatch int
+var affiliateSleepDuration string
+var affiliatePageSize, threshold int
 var mysqlHost string
+var affiliateFollowerFrom int // 从多少粉丝开始爬取, 间隔为100
 
 func init() {
 	crawlCmd.AddCommand(affiliateCmd)
 	affiliateCmd.Flags().StringVarP(&mysqlHost, "mysqlhost", "", "ecs", "mysql host")
-	affiliateCmd.Flags().StringVarP(&affiliateRegion, "region", "r", "", "curl 命令所处的文件")
 	affiliateCmd.Flags().StringVarP(&affiliateSleepDuration, "duration", "d", "", "每爬取1000条数据后休息的时间")
 	affiliateCmd.Flags().IntVarP(&affiliatePageSize, "pageSize", "p", 20, "每页的数据量")
-	affiliateCmd.Flags().IntVarP(&affiliateMaxBatch, "maxBatch", "m", 1000, "每页的数据量")
+	affiliateCmd.Flags().IntVarP(&threshold, "threshold", "m", 50, "连续发起多少次请求后休息")
+	affiliateCmd.Flags().IntVarP(&affiliateFollowerFrom, "followerFrom", "", 0, "从多少粉丝开始爬取, 间隔为100")
 
 }

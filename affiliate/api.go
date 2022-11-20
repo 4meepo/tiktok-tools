@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/4meepo/tiktok-tools/curl"
@@ -13,6 +14,7 @@ import (
 var ErrCurlCmd = errors.New("解析 curl 命令失败")
 
 func searchCreators(curlSample string, request searchCreatorsRequest) (*searchCreatorsResponse, error) {
+	log.Printf("查询[%d %d]粉丝数的创作者\n", request.Request.FollowerCntMax, request.Request.FollowerCntMin)
 	// 利用curl中的 header和query param ...
 	r, ok := curl.Parse(curlSample)
 	if !ok {
@@ -59,8 +61,8 @@ type requestPayload struct {
 	ContentPreferenceRange []interface{} `json:"content_preference_range,omitempty"`
 	CreatorScoreRange      []interface{} `json:"creator_score_range,omitempty"`
 	FollowerAgeGroups      []interface{} `json:"follower_age_groups,omitempty"`
-	FollowerCntMax         *uint32       `json:"follower_cnt_max,omitempty"`
-	FollowerCntMin         *uint32       `json:"follower_cnt_min,omitempty"`
+	FollowerCntMax         int           `json:"follower_cnt_max,omitempty"`
+	FollowerCntMin         int           `json:"follower_cnt_min,omitempty"`
 	FollowerGenders        []interface{} `json:"follower_genders,omitempty"`
 	Managed_by_agency      []interface{} `json:"managed_by_agency,omitempty"`
 	Pagination             pagination    `json:"pagination,omitempty"`
