@@ -41,7 +41,6 @@ func Test_searchCreators(t *testing.T) {
 			Pagination: pagination{
 				Size:           20,
 				Page:           0,
-				NextItemCursor: nil,
 			},
 		},
 	})

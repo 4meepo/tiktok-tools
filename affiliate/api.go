@@ -14,7 +14,6 @@ import (
 var ErrCurlCmd = errors.New("解析 curl 命令失败")
 
 func searchCreators(curlSample string, request searchCreatorsRequest) (*searchCreatorsResponse, error) {
-	log.Printf("查询[%d %d]粉丝数的创作者\n", request.Request.FollowerCntMax, request.Request.FollowerCntMin)
 	// 利用curl中的 header和query param ...
 	r, ok := curl.Parse(curlSample)
 	if !ok {
@@ -46,7 +45,7 @@ func searchCreators(curlSample string, request searchCreatorsRequest) (*searchCr
 	if err := json.Unmarshal(rspBytes, &response); err != nil {
 		return nil, fmt.Errorf("解析searchCreators请求体失败: %w", err)
 	}
-
+	log.Printf("查询[%d %d]粉丝数的创作者, 共%d人\n", request.Request.FollowerCntMax, request.Request.FollowerCntMin, len(response.Data.CreatorProfiles))
 	return &response, nil
 }
 
@@ -70,7 +69,6 @@ type requestPayload struct {
 type pagination struct {
 	Size           int  `json:"size"` // from 0
 	Page           int  `json:"page"`
-	NextItemCursor *int `json:"next_item_cursor,omitempty"` // = size * page + 1, nil if = 0
 }
 
 // rsp

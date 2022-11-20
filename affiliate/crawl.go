@@ -46,20 +46,14 @@ func CrawlAffiliateCreators(host,
 			time.Sleep(duration)
 		}
 
-		var nextItemCursor *int
-		if page != 0 {
-			nic := (page * pageSize) + 1
-			nextItemCursor = &nic
-		}
 		request := searchCreatorsRequest{
 			Request: requestPayload{
 				Algorithm:      3,
 				FollowerCntMax: followerCntMax,
 				FollowerCntMin: followerCntMax - 100,
 				Pagination: pagination{
-					Size:           pageSize,
-					Page:           page,
-					NextItemCursor: nextItemCursor,
+					Size: pageSize,
+					Page: page,
 				},
 			},
 		}
@@ -80,18 +74,7 @@ func CrawlAffiliateCreators(host,
 			continue
 		}
 
-		if rsp.Data.NextPagination.HasMore == false {
-			// 此区间无更多达人
-			// next round
-			log.Printf("[%d %d]区间无更多达人, 下一个区间\n", followerCntMax, followerCntMax-100)
-			followerCntMax -= 100
-			if followerCntMax <= 100 {
-				log.Printf("粉丝数已经小于100, 退出爬取")
-				os.Exit(0)
-			}
-			page = -1 // 重新开始
-		} else {
-
+		if len(rsp.Data.CreatorProfiles) > 0 {
 			// 先查询是否重复
 			var creatorsId []string
 			for _, c := range rsp.Data.CreatorProfiles {
@@ -161,6 +144,18 @@ func CrawlAffiliateCreators(host,
 			// 输出统计信息
 			log.Printf("第%d页, 更新%d条, 插入%d条, 区间[%d %d]共有 %d 人 \n", page, totalUpdate, totalInsert, followerCntMax, followerCntMax-100, rsp.Data.NextPagination.Total)
 		}
+		if !rsp.Data.NextPagination.HasMore {
+
+			// 此区间无更多达人
+			// next round
+			log.Printf("[%d %d]区间无更多达人, 下一个区间\n", followerCntMax, followerCntMax-100)
+			followerCntMax -= 100
+			if followerCntMax <= 100 {
+				log.Printf("粉丝数已经小于100, 退出爬取")
+				os.Exit(0)
+			}
+			page = -1 // 重新开始
+		}
 
 		d := randomDuration()
 		log.Printf("休息 %s 后继续\n", d.String())
@@ -178,7 +173,7 @@ func retry(page, retryTimes *int) {
 }
 
 func randomDuration() time.Duration {
-	min, max := 15, 30
+	min, max := 5, 15
 	s := min + rand.Intn(max-min)
 	return time.Duration(s) * time.Second
 }

@@ -37,7 +37,7 @@ func (TiktokCreator) Edges() []ent.Edge {
 func (TiktokCreator) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("creator_id").Unique(),
-		index.Fields("creator_name").Unique(),
+		index.Fields("creator_name"),
 		index.Fields("region", "follower_count"),
 	}
 }

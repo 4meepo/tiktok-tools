@@ -73,7 +73,7 @@ var (
 			},
 			{
 				Name:    "tiktokcreator_creator_name",
-				Unique:  true,
+				Unique:  false,
 				Columns: []*schema.Column{TiktokCreatorsColumns[4]},
 			},
 			{
