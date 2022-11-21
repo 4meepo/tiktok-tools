@@ -24,6 +24,7 @@ func CrawlAffiliateCreators(host,
 	affiliateFollowerFrom, // 从多少粉丝开始爬取, 间隔为100
 	pageSize,
 	threshold int, // 最多爬取多少粉丝后休息一段时间
+	interval int, // api 爬取间隔 单位秒
 ) error {
 	ctx, cancelFn := context.WithCancel(context.Background())
 	ec := ent.GetInstance(host)
@@ -157,7 +158,7 @@ func CrawlAffiliateCreators(host,
 			page = -1 // 重新开始
 		}
 
-		d := randomDuration()
+		d := randomDuration(interval)
 		log.Printf("休息 %s 后继续\n", d.String())
 		time.Sleep(d)
 	}
@@ -172,8 +173,8 @@ func retry(page, retryTimes *int) {
 	*retryTimes++
 }
 
-func randomDuration() time.Duration {
-	min, max := 5, 15
+func randomDuration(interval int) time.Duration {
+	min, max := interval, interval+10
 	s := min + rand.Intn(max-min)
 	return time.Duration(s) * time.Second
 }

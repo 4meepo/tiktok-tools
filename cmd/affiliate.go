@@ -37,7 +37,7 @@ var affiliateCmd = &cobra.Command{
 			return errors.New("followerFrom 不能小于等于0")
 		}
 
-		return affiliate.CrawlAffiliateCreators(mysqlHost, string(bytes), d, affiliateFollowerFrom, affiliatePageSize, threshold)
+		return affiliate.CrawlAffiliateCreators(mysqlHost, string(bytes), d, affiliateFollowerFrom, affiliatePageSize, threshold, interval)
 	},
 }
 
@@ -45,11 +45,13 @@ var affiliateSleepDuration string
 var affiliatePageSize, threshold int
 var mysqlHost string
 var affiliateFollowerFrom int // 从多少粉丝开始爬取, 间隔为100
+var interval int              // api 爬取间隔
 
 func init() {
 	crawlCmd.AddCommand(affiliateCmd)
 	affiliateCmd.Flags().StringVarP(&mysqlHost, "mysqlhost", "", "ecs", "mysql host")
-	affiliateCmd.Flags().StringVarP(&affiliateSleepDuration, "duration", "d", "", "每爬取1000条数据后休息的时间")
+	affiliateCmd.Flags().StringVarP(&affiliateSleepDuration, "duration", "d", "", "连续发送多少次请求后休息一段时间")
+	affiliateCmd.Flags().IntVarP(&interval, "interval", "i", 30, "api请求平均间隔")
 	affiliateCmd.Flags().IntVarP(&affiliatePageSize, "pageSize", "", 20, "每页的数据量")
 	affiliateCmd.Flags().IntVarP(&threshold, "threshold", "", 50, "连续发起多少次请求后休息")
 	affiliateCmd.Flags().IntVarP(&affiliateFollowerFrom, "followerFrom", "", 0, "从多少粉丝开始爬取, 间隔为100")
