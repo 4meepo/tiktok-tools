@@ -28,7 +28,7 @@ func searchCreators(curlSample string, request searchCreatorsRequest) (*searchCr
 
 	rsp, err := httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("发送searchCreators请求失败: %w", err)
+		return nil, fmt.Errorf("发送searchCreators请求失败: %w, body:%s ", err, string(bytes))
 	}
 	defer rsp.Body.Close()
 
@@ -43,7 +43,7 @@ func searchCreators(curlSample string, request searchCreatorsRequest) (*searchCr
 
 	var response searchCreatorsResponse
 	if err := json.Unmarshal(rspBytes, &response); err != nil {
-		return nil, fmt.Errorf("解析searchCreators请求体失败: %w", err)
+		return nil, fmt.Errorf("解析searchCreators响应体失败: %w, req: %s rsp: %s", err, string(bytes), string(rspBytes))
 	}
 	log.Printf("查询[%d %d]粉丝数的创作者, 共%d人\n", request.Request.FollowerCntMax, request.Request.FollowerCntMin, len(response.Data.CreatorProfiles))
 	return &response, nil
@@ -67,8 +67,8 @@ type requestPayload struct {
 	Pagination             pagination    `json:"pagination,omitempty"`
 }
 type pagination struct {
-	Size           int  `json:"size"` // from 0
-	Page           int  `json:"page"`
+	Size int `json:"size"` // from 0
+	Page int `json:"page"`
 }
 
 // rsp
