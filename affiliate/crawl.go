@@ -18,7 +18,7 @@ var httpClient = http.Client{
 	Timeout: time.Second * 8,
 }
 
-func CrawlAffiliateCreators(host,
+func CrawlAffiliateCreators(host, user, password,
 	curlSample string,
 	duration time.Duration, // 休息时长
 	affiliateFollowerFrom, // 从多少粉丝开始爬取, 间隔为100
@@ -27,7 +27,7 @@ func CrawlAffiliateCreators(host,
 	interval int, // api 爬取间隔 单位秒
 ) error {
 	ctx, cancelFn := context.WithCancel(context.Background())
-	ec := ent.GetInstance(host)
+	ec := ent.GetInstance(user, password, host)
 
 	go elegant.Shutdown(cancelFn)
 

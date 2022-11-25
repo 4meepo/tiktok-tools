@@ -9,19 +9,6 @@ import (
 	"github.com/4meepo/tiktok-tools/ent"
 )
 
-// The CreatorFunc type is an adapter to allow the use of ordinary
-// function as Creator mutator.
-type CreatorFunc func(context.Context, *ent.CreatorMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f CreatorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CreatorMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CreatorMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The TiktokCreatorFunc type is an adapter to allow the use of ordinary
 // function as TiktokCreator mutator.
 type TiktokCreatorFunc func(context.Context, *ent.TiktokCreatorMutation) (ent.Value, error)

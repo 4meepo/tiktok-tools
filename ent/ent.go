@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/4meepo/tiktok-tools/ent/creator"
 	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
 )
 
@@ -32,7 +31,6 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		creator.Table:       creator.ValidColumn,
 		tiktokcreator.Table: tiktokcreator.ValidColumn,
 	}
 	check, ok := checks[table]

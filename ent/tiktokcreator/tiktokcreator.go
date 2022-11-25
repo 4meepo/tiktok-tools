@@ -2,19 +2,11 @@
 
 package tiktokcreator
 
-import (
-	"time"
-)
-
 const (
 	// Label holds the string label denoting the tiktokcreator type in the database.
 	Label = "tiktok_creator"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreateTime holds the string denoting the create_time field in the database.
-	FieldCreateTime = "create_time"
-	// FieldUpdateTime holds the string denoting the update_time field in the database.
-	FieldUpdateTime = "update_time"
 	// FieldCreatorID holds the string denoting the creator_id field in the database.
 	FieldCreatorID = "creator_id"
 	// FieldCreatorName holds the string denoting the creator_name field in the database.
@@ -44,8 +36,6 @@ const (
 // Columns holds all SQL columns for tiktokcreator fields.
 var Columns = []string{
 	FieldID,
-	FieldCreateTime,
-	FieldUpdateTime,
 	FieldCreatorID,
 	FieldCreatorName,
 	FieldCreatorNickname,
@@ -70,12 +60,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultCreateTime holds the default value on creation for the "create_time" field.
-	DefaultCreateTime func() time.Time
-	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
-	DefaultUpdateTime func() time.Time
-	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
-	UpdateDefaultUpdateTime func() time.Time
 	// CreatorIDValidator is a validator for the "creator_id" field. It is called by the builders before save.
 	CreatorIDValidator func(string) error
 	// CreatorNameValidator is a validator for the "creator_name" field. It is called by the builders before save.

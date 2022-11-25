@@ -4,7 +4,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"entgo.io/ent/schema/mixin"
 )
 
 // TiktokCreator holds the schema definition for the TiktokCreator entity.
@@ -39,11 +38,5 @@ func (TiktokCreator) Indexes() []ent.Index {
 		index.Fields("creator_id").Unique(),
 		index.Fields("creator_name"),
 		index.Fields("region", "follower_count"),
-	}
-}
-
-func (TiktokCreator) Mixin() []ent.Mixin {
-	return []ent.Mixin{
-		mixin.Time{},
 	}
 }

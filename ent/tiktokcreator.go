@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
@@ -17,10 +16,6 @@ type TiktokCreator struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// CreateTime holds the value of the "create_time" field.
-	CreateTime time.Time `json:"create_time,omitempty"`
-	// UpdateTime holds the value of the "update_time" field.
-	UpdateTime time.Time `json:"update_time,omitempty"`
 	// CreatorID holds the value of the "creator_id" field.
 	CreatorID string `json:"creator_id,omitempty"`
 	// CreatorName holds the value of the "creator_name" field.
@@ -56,8 +51,6 @@ func (*TiktokCreator) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case tiktokcreator.FieldCreatorID, tiktokcreator.FieldCreatorName, tiktokcreator.FieldCreatorNickname, tiktokcreator.FieldRegion, tiktokcreator.FieldCreatorOecuid, tiktokcreator.FieldCreatorTtuid:
 			values[i] = new(sql.NullString)
-		case tiktokcreator.FieldCreateTime, tiktokcreator.FieldUpdateTime:
-			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TiktokCreator", columns[i])
 		}
@@ -79,18 +72,6 @@ func (tc *TiktokCreator) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			tc.ID = int(value.Int64)
-		case tiktokcreator.FieldCreateTime:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field create_time", values[i])
-			} else if value.Valid {
-				tc.CreateTime = value.Time
-			}
-		case tiktokcreator.FieldUpdateTime:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field update_time", values[i])
-			} else if value.Valid {
-				tc.UpdateTime = value.Time
-			}
 		case tiktokcreator.FieldCreatorID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field creator_id", values[i])
@@ -187,12 +168,6 @@ func (tc *TiktokCreator) String() string {
 	var builder strings.Builder
 	builder.WriteString("TiktokCreator(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", tc.ID))
-	builder.WriteString("create_time=")
-	builder.WriteString(tc.CreateTime.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("update_time=")
-	builder.WriteString(tc.UpdateTime.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("creator_id=")
 	builder.WriteString(tc.CreatorID)
 	builder.WriteString(", ")

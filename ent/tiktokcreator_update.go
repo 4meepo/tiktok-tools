@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,12 +25,6 @@ type TiktokCreatorUpdate struct {
 // Where appends a list predicates to the TiktokCreatorUpdate builder.
 func (tcu *TiktokCreatorUpdate) Where(ps ...predicate.TiktokCreator) *TiktokCreatorUpdate {
 	tcu.mutation.Where(ps...)
-	return tcu
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (tcu *TiktokCreatorUpdate) SetUpdateTime(t time.Time) *TiktokCreatorUpdate {
-	tcu.mutation.SetUpdateTime(t)
 	return tcu
 }
 
@@ -194,7 +187,6 @@ func (tcu *TiktokCreatorUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	tcu.defaults()
 	if len(tcu.hooks) == 0 {
 		if err = tcu.check(); err != nil {
 			return 0, err
@@ -249,14 +241,6 @@ func (tcu *TiktokCreatorUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (tcu *TiktokCreatorUpdate) defaults() {
-	if _, ok := tcu.mutation.UpdateTime(); !ok {
-		v := tiktokcreator.UpdateDefaultUpdateTime()
-		tcu.mutation.SetUpdateTime(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (tcu *TiktokCreatorUpdate) check() error {
 	if v, ok := tcu.mutation.CreatorID(); ok {
@@ -299,9 +283,6 @@ func (tcu *TiktokCreatorUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := tcu.mutation.UpdateTime(); ok {
-		_spec.SetField(tiktokcreator.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := tcu.mutation.CreatorID(); ok {
 		_spec.SetField(tiktokcreator.FieldCreatorID, field.TypeString, value)
@@ -370,12 +351,6 @@ type TiktokCreatorUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TiktokCreatorMutation
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (tcuo *TiktokCreatorUpdateOne) SetUpdateTime(t time.Time) *TiktokCreatorUpdateOne {
-	tcuo.mutation.SetUpdateTime(t)
-	return tcuo
 }
 
 // SetCreatorID sets the "creator_id" field.
@@ -544,7 +519,6 @@ func (tcuo *TiktokCreatorUpdateOne) Save(ctx context.Context) (*TiktokCreator, e
 		err  error
 		node *TiktokCreator
 	)
-	tcuo.defaults()
 	if len(tcuo.hooks) == 0 {
 		if err = tcuo.check(); err != nil {
 			return nil, err
@@ -602,14 +576,6 @@ func (tcuo *TiktokCreatorUpdateOne) Exec(ctx context.Context) error {
 func (tcuo *TiktokCreatorUpdateOne) ExecX(ctx context.Context) {
 	if err := tcuo.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (tcuo *TiktokCreatorUpdateOne) defaults() {
-	if _, ok := tcuo.mutation.UpdateTime(); !ok {
-		v := tiktokcreator.UpdateDefaultUpdateTime()
-		tcuo.mutation.SetUpdateTime(v)
 	}
 }
 
@@ -672,9 +638,6 @@ func (tcuo *TiktokCreatorUpdateOne) sqlSave(ctx context.Context) (_node *TiktokC
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := tcuo.mutation.UpdateTime(); ok {
-		_spec.SetField(tiktokcreator.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := tcuo.mutation.CreatorID(); ok {
 		_spec.SetField(tiktokcreator.FieldCreatorID, field.TypeString, value)

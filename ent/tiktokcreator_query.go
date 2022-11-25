@@ -253,12 +253,12 @@ func (tcq *TiktokCreatorQuery) Clone() *TiktokCreatorQuery {
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		CreatorID string `json:"creator_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.TiktokCreator.Query().
-//		GroupBy(tiktokcreator.FieldCreateTime).
+//		GroupBy(tiktokcreator.FieldCreatorID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -282,11 +282,11 @@ func (tcq *TiktokCreatorQuery) GroupBy(field string, fields ...string) *TiktokCr
 // Example:
 //
 //	var v []struct {
-//		CreateTime time.Time `json:"create_time,omitempty"`
+//		CreatorID string `json:"creator_id,omitempty"`
 //	}
 //
 //	client.TiktokCreator.Query().
-//		Select(tiktokcreator.FieldCreateTime).
+//		Select(tiktokcreator.FieldCreatorID).
 //		Scan(ctx, &v)
 //
 func (tcq *TiktokCreatorQuery) Select(fields ...string) *TiktokCreatorSelect {

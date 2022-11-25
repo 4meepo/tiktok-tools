@@ -8,46 +8,9 @@ import (
 )
 
 var (
-	// CreatorsColumns holds the columns for the "creators" table.
-	CreatorsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
-		{Name: "xzid", Type: field.TypeString, Unique: true, Size: 128},
-		{Name: "unique_id", Type: field.TypeString, Size: 64},
-		{Name: "nick_name", Type: field.TypeString, Size: 100},
-		{Name: "region", Type: field.TypeString, Size: 16},
-		{Name: "follower_num", Type: field.TypeUint32},
-		{Name: "creator_id", Type: field.TypeString, Size: 32, Default: ""},
-		{Name: "creator_oecuid", Type: field.TypeString, Size: 32, Default: ""},
-		{Name: "cate1_name_cn", Type: field.TypeJSON},
-		{Name: "tiktok_category", Type: field.TypeJSON},
-		{Name: "email", Type: field.TypeString, Size: 64},
-		{Name: "whatsapp", Type: field.TypeString, Size: 64},
-	}
-	// CreatorsTable holds the schema information for the "creators" table.
-	CreatorsTable = &schema.Table{
-		Name:       "creators",
-		Columns:    CreatorsColumns,
-		PrimaryKey: []*schema.Column{CreatorsColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "creator_xzid",
-				Unique:  true,
-				Columns: []*schema.Column{CreatorsColumns[3]},
-			},
-			{
-				Name:    "creator_region_follower_num",
-				Unique:  false,
-				Columns: []*schema.Column{CreatorsColumns[6], CreatorsColumns[7]},
-			},
-		},
-	}
 	// TiktokCreatorsColumns holds the columns for the "tiktok_creators" table.
 	TiktokCreatorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
 		{Name: "creator_id", Type: field.TypeString, Size: 30},
 		{Name: "creator_name", Type: field.TypeString, Size: 100},
 		{Name: "creator_nickname", Type: field.TypeString, Size: 100},
@@ -69,23 +32,22 @@ var (
 			{
 				Name:    "tiktokcreator_creator_id",
 				Unique:  true,
-				Columns: []*schema.Column{TiktokCreatorsColumns[3]},
+				Columns: []*schema.Column{TiktokCreatorsColumns[1]},
 			},
 			{
 				Name:    "tiktokcreator_creator_name",
 				Unique:  false,
-				Columns: []*schema.Column{TiktokCreatorsColumns[4]},
+				Columns: []*schema.Column{TiktokCreatorsColumns[2]},
 			},
 			{
 				Name:    "tiktokcreator_region_follower_count",
 				Unique:  false,
-				Columns: []*schema.Column{TiktokCreatorsColumns[6], TiktokCreatorsColumns[8]},
+				Columns: []*schema.Column{TiktokCreatorsColumns[4], TiktokCreatorsColumns[6]},
 			},
 		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		CreatorsTable,
 		TiktokCreatorsTable,
 	}
 )

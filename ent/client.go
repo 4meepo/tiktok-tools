@@ -10,7 +10,6 @@ import (
 
 	"github.com/4meepo/tiktok-tools/ent/migrate"
 
-	"github.com/4meepo/tiktok-tools/ent/creator"
 	"github.com/4meepo/tiktok-tools/ent/tiktokcreator"
 
 	"entgo.io/ent/dialect"
@@ -22,8 +21,6 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Creator is the client for interacting with the Creator builders.
-	Creator *CreatorClient
 	// TiktokCreator is the client for interacting with the TiktokCreator builders.
 	TiktokCreator *TiktokCreatorClient
 }
@@ -39,7 +36,6 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Creator = NewCreatorClient(c.config)
 	c.TiktokCreator = NewTiktokCreatorClient(c.config)
 }
 
@@ -74,7 +70,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:           ctx,
 		config:        cfg,
-		Creator:       NewCreatorClient(cfg),
 		TiktokCreator: NewTiktokCreatorClient(cfg),
 	}, nil
 }
@@ -95,7 +90,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:           ctx,
 		config:        cfg,
-		Creator:       NewCreatorClient(cfg),
 		TiktokCreator: NewTiktokCreatorClient(cfg),
 	}, nil
 }
@@ -103,7 +97,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Creator.
+//		TiktokCreator.
 //		Query().
 //		Count(ctx)
 //
@@ -126,98 +120,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Creator.Use(hooks...)
 	c.TiktokCreator.Use(hooks...)
-}
-
-// CreatorClient is a client for the Creator schema.
-type CreatorClient struct {
-	config
-}
-
-// NewCreatorClient returns a client for the Creator from the given config.
-func NewCreatorClient(c config) *CreatorClient {
-	return &CreatorClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `creator.Hooks(f(g(h())))`.
-func (c *CreatorClient) Use(hooks ...Hook) {
-	c.hooks.Creator = append(c.hooks.Creator, hooks...)
-}
-
-// Create returns a builder for creating a Creator entity.
-func (c *CreatorClient) Create() *CreatorCreate {
-	mutation := newCreatorMutation(c.config, OpCreate)
-	return &CreatorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Creator entities.
-func (c *CreatorClient) CreateBulk(builders ...*CreatorCreate) *CreatorCreateBulk {
-	return &CreatorCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Creator.
-func (c *CreatorClient) Update() *CreatorUpdate {
-	mutation := newCreatorMutation(c.config, OpUpdate)
-	return &CreatorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *CreatorClient) UpdateOne(cr *Creator) *CreatorUpdateOne {
-	mutation := newCreatorMutation(c.config, OpUpdateOne, withCreator(cr))
-	return &CreatorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *CreatorClient) UpdateOneID(id int) *CreatorUpdateOne {
-	mutation := newCreatorMutation(c.config, OpUpdateOne, withCreatorID(id))
-	return &CreatorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Creator.
-func (c *CreatorClient) Delete() *CreatorDelete {
-	mutation := newCreatorMutation(c.config, OpDelete)
-	return &CreatorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *CreatorClient) DeleteOne(cr *Creator) *CreatorDeleteOne {
-	return c.DeleteOneID(cr.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *CreatorClient) DeleteOneID(id int) *CreatorDeleteOne {
-	builder := c.Delete().Where(creator.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &CreatorDeleteOne{builder}
-}
-
-// Query returns a query builder for Creator.
-func (c *CreatorClient) Query() *CreatorQuery {
-	return &CreatorQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Creator entity by its id.
-func (c *CreatorClient) Get(ctx context.Context, id int) (*Creator, error) {
-	return c.Query().Where(creator.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *CreatorClient) GetX(ctx context.Context, id int) *Creator {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *CreatorClient) Hooks() []Hook {
-	return c.hooks.Creator
 }
 
 // TiktokCreatorClient is a client for the TiktokCreator schema.

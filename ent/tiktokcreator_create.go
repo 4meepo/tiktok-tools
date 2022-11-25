@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,34 +17,6 @@ type TiktokCreatorCreate struct {
 	config
 	mutation *TiktokCreatorMutation
 	hooks    []Hook
-}
-
-// SetCreateTime sets the "create_time" field.
-func (tcc *TiktokCreatorCreate) SetCreateTime(t time.Time) *TiktokCreatorCreate {
-	tcc.mutation.SetCreateTime(t)
-	return tcc
-}
-
-// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
-func (tcc *TiktokCreatorCreate) SetNillableCreateTime(t *time.Time) *TiktokCreatorCreate {
-	if t != nil {
-		tcc.SetCreateTime(*t)
-	}
-	return tcc
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (tcc *TiktokCreatorCreate) SetUpdateTime(t time.Time) *TiktokCreatorCreate {
-	tcc.mutation.SetUpdateTime(t)
-	return tcc
-}
-
-// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
-func (tcc *TiktokCreatorCreate) SetNillableUpdateTime(t *time.Time) *TiktokCreatorCreate {
-	if t != nil {
-		tcc.SetUpdateTime(*t)
-	}
-	return tcc
 }
 
 // SetCreatorID sets the "creator_id" field.
@@ -239,14 +210,6 @@ func (tcc *TiktokCreatorCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tcc *TiktokCreatorCreate) defaults() {
-	if _, ok := tcc.mutation.CreateTime(); !ok {
-		v := tiktokcreator.DefaultCreateTime()
-		tcc.mutation.SetCreateTime(v)
-	}
-	if _, ok := tcc.mutation.UpdateTime(); !ok {
-		v := tiktokcreator.DefaultUpdateTime()
-		tcc.mutation.SetUpdateTime(v)
-	}
 	if _, ok := tcc.mutation.ProductCategories(); !ok {
 		v := tiktokcreator.DefaultProductCategories
 		tcc.mutation.SetProductCategories(v)
@@ -279,12 +242,6 @@ func (tcc *TiktokCreatorCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tcc *TiktokCreatorCreate) check() error {
-	if _, ok := tcc.mutation.CreateTime(); !ok {
-		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "TiktokCreator.create_time"`)}
-	}
-	if _, ok := tcc.mutation.UpdateTime(); !ok {
-		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "TiktokCreator.update_time"`)}
-	}
 	if _, ok := tcc.mutation.CreatorID(); !ok {
 		return &ValidationError{Name: "creator_id", err: errors.New(`ent: missing required field "TiktokCreator.creator_id"`)}
 	}
@@ -365,14 +322,6 @@ func (tcc *TiktokCreatorCreate) createSpec() (*TiktokCreator, *sqlgraph.CreateSp
 			},
 		}
 	)
-	if value, ok := tcc.mutation.CreateTime(); ok {
-		_spec.SetField(tiktokcreator.FieldCreateTime, field.TypeTime, value)
-		_node.CreateTime = value
-	}
-	if value, ok := tcc.mutation.UpdateTime(); ok {
-		_spec.SetField(tiktokcreator.FieldUpdateTime, field.TypeTime, value)
-		_node.UpdateTime = value
-	}
 	if value, ok := tcc.mutation.CreatorID(); ok {
 		_spec.SetField(tiktokcreator.FieldCreatorID, field.TypeString, value)
 		_node.CreatorID = value
