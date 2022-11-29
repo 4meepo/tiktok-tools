@@ -23,13 +23,13 @@ func Invite(curlString string) error {
 
 	// 输入用户的creators_id
 	fmt.Printf("请输入creators_id:\n")
-	input, err := bufio.NewReader(os.Stdin).ReadString(' ')
+	input, err := bufio.NewReader(os.Stdin).ReadString('^')
 	if err != nil {
 		logrus.Errorf("读取用户输入失败: %w", err)
 		os.Exit(1)
 	}
 
-	creatrosID := strings.Split(strings.TrimSpace(input), "\n")
+	creatrosID := strings.Split(strings.TrimSpace(strings.TrimSuffix(input, "^")), "\n")
 	logrus.Infof("准备邀约%d个用户", len(creatrosID))
 
 	fmt.Printf("请确认是否开始邀约(y/n):")
@@ -43,6 +43,7 @@ func Invite(curlString string) error {
 			// 发送邀约请求
 			bs, _ := json.Marshal(payload)
 			r.Body = string(bs)
+			fmt.Println(r.Body)
 			req := r.AsHttpRequest()
 
 			if err, remain := sendInvitation(req); err != nil {
@@ -105,8 +106,8 @@ func constructPayload() *invitationRequest {
 
 	// 邀请消息
 	fmt.Printf("请输入邀请消息:")
-	var message string
-	if _, err := fmt.Scanf("%s", &message); err != nil {
+	message, err := bufio.NewReader(os.Stdin).ReadString('^')
+	if err != nil {
 		logrus.Errorf("读取用户输入失败: %w", err)
 		os.Exit(1)
 	}
@@ -114,7 +115,7 @@ func constructPayload() *invitationRequest {
 		logrus.Errorf("邀请消息不能为空")
 		os.Exit(1)
 	}
-	payload.InvitationMessage = message
+	payload.InvitationMessage = strings.TrimSuffix(message, "^")
 
 	// whatsapp country code
 	fmt.Printf("请输入whatsapp国家代码(如MY#60):")
